@@ -5,15 +5,11 @@
    or use it for commercial purposes.
  ************************************************************)
 
-(* TODO: change the name and NetID below to your own, then delete this TODO
-   comment. *)
+
 
 (** CS 3110 Fall 2023 Assignment A1 Evolution
 
-    @author Your Name Here (your netid here) *)
-
-(* TODO: complete the academic integrity statement below, then delete this TODO
-   comment. *)
+    @author Nicholas Lombardo (nrl44) *)
 
 (************************************************************
 
@@ -28,7 +24,7 @@
    list of other students with whom I collaborated, and a brief summary of that
    collaboration:
 
-   - none
+   - Nicholas Lombardo
 
  ************************************************************)
 

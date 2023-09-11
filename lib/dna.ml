@@ -33,8 +33,18 @@ let string_of_nucleotide = function
 
 (** Given a single helix, computes the complementary helix of the double helix.
     The complementary helix is obtained by swapping A <-> T and G <-> C. *)
-let rec complementary_helix (x : helix) : helix = failwith "Unimplemented"
-
+let swap (x: nucleotide) : nucleotide =
+  match x with
+  | A -> T
+  | T -> A
+  | G -> C
+  | C -> G
+    
+let rec complementary_helix (x : helix) : helix = 
+  match x with
+    |[] -> []
+    |[h] -> [swap h]
+    | h :: t -> swap h :: complementary_helix t
 (** Given two equal-length helices, computes the Hamming distance between them.
     This is the number of corresponding positions in the helices at which the
     nucleotides in those positions differ. Raises: Invalid_argument if the input

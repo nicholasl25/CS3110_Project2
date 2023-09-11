@@ -63,8 +63,17 @@ let complementary_helix_test out in1 _ =
 
 let complementary_helix_tests =
   [
+    "complementary_helix single-element list 1"
+    >:: complementary_helix_test [T] [A];
+    "complementary_helix single-element list 2"
+    >:: complementary_helix_test [C] [G];
+    "complementary_helix repeated element list"
+    >:: complementary_helix_test [A; A; A] [T; T; T];
     "complementary_helix multi-element list"
-    >:: complementary_helix_test [ G; A; A; G ] [ C; T; T; C ];
+    >:: complementary_helix_test [G; A; A; G] [C; T; T; C];
+    "complementary_helix multi-element list with all nucleotides"
+    >:: complementary_helix_test [C; T; A; G; T] [G; A; T; C; A];
+    
   ]
 
 (*************************** hamming_distance tests ***************************)
