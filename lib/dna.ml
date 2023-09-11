@@ -50,7 +50,14 @@ let rec complementary_helix (x : helix) : helix =
     nucleotides in those positions differ. Raises: Invalid_argument if the input
     helices are not the same length. *)
 let rec hamming_distance (x1 : helix) (x2 : helix) : int =
-  failwith "Unimplemented"
+  if List.length x1 = List.length x2
+    then match x1, x2 with
+  | [], [] -> 0
+  | [h], [k]-> if h = k then 0 else 1
+  | h :: t1 , k :: t2 -> if h = k then hamming_distance t1 t2
+    else (hamming_distance t1 t2) + 1
+  else invalid_arg "Two Helixs are not of the same length"
+ 
 
 (** A list of helices of ape species in order of non-increasing similarity
     (highest to lowest) to humans, as measured by Hamming distance. You can

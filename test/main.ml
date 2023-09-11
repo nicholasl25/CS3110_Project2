@@ -97,12 +97,20 @@ let hamming_invalid_arg_test in1 in2 _ =
       try Dna.hamming_distance in1 in2 with Invalid_argument _ -> raise exn)
 
 let hamming_distance_tests =
-  [ (* Example test cases: *)
-    (* "hamming_distance empty" >:: hamming_distance_test 0 [] []; *)
-    (* "hamming_distance one different nucleotide" >:: hamming_distance_test 1 [
-       G; A ] [ G; T ]; *)
-    (* "hamming_distance nonmatching lengths" >:: hamming_invalid_arg_test [ C ]
-       []; *) ]
+  [ 
+    "hamming_distance_test with two empty helixs"
+    >:: hamming_distance_test 0 [] [];
+    "hamming_distance_test with two equivalent helixs"
+    >:: hamming_distance_test 0 [A; T; G; C] [A; T; G; C];
+    "hamming_distance_test with one difference"
+    >:: hamming_distance_test 1 [A; T; G] [A; T; C];
+    "hamming_distance_test with two single nucleotide helixs"
+    >:: hamming_distance_test 1 [T] [G];
+    "hamming_distance_test with very differnet helixs"
+    >:: hamming_distance_test 5 [T; A; G; C; A] [A; T; C; G; T];
+    "hamming_distance nonmatching lengths" 
+    >:: hamming_invalid_arg_test [C] []; 
+  ]
 
 (************************ decreasing_similarity tests *************************)
 
