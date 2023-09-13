@@ -121,9 +121,10 @@ let decreasing_similarity_test out in1 _ =
     (Dna.decreasing_similarity in1)
 
 let decreasing_similarity_tests =
-  [ (* Example test case: *)
-    (* "decreasing_similarity to humans" >:: decreasing_similarity_test true
-       (Dna.most_like_human ()); *) ]
+  [ 
+    "decreasing_similarity to humans" 
+    >:: decreasing_similarity_test true (Dna.most_like_human ());  
+  ]
 
 (***************************** count_leaves tests *****************************)
 

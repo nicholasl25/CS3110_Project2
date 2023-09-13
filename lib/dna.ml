@@ -62,12 +62,22 @@ let rec hamming_distance (x1 : helix) (x2 : helix) : int =
 (** A list of helices of ape species in order of non-increasing similarity
     (highest to lowest) to humans, as measured by Hamming distance. You can
     break ties however you want. *)
-let most_like_human () : helix list = failwith "Unimplemented"
+let most_like_human () : helix list = 
+  [chimpanzee; gorilla; orangutan; siamang; pileated_gibbon;white_cheeked_gibbon; lar_gibbon]
 
 (** Determines whether a list of ape helices is ordered in decreasing order of
     similarity to humans, as measured by Hamming distance. Returns true for
     empty lists and lists that contain exactly one helix. *)
-let decreasing_similarity (apes : helix list) : bool = failwith "Unimplemented"
+
+let human_distance (ape: helix) : int = 
+  hamming_distance human ape
+let rec decreasing_similarity (apes : helix list) : bool = 
+  match apes with 
+  |[] -> true
+  |[h] -> true
+  | h :: [t] -> human_distance h <= human_distance t
+  | h :: k :: t -> human_distance h <= human_distance k && decreasing_similarity (k :: t)
+  
 
 (** An evolutionary tree is a binary tree whose leaves are labeled with DNA
     helices. *)
@@ -82,10 +92,15 @@ let greater_apes () : tree =
 
 (* A representation of the right side of the tree from Figure A in the A1
    writeup (the "lesser apes"). *)
-let lesser_apes () : tree = failwith "Unimplemented"
+let lesser_apes () : tree = 
+  Node (Leaf white_cheeked_gibbon, Node (Leaf siamang, Node (Leaf lar_gibbon, Leaf pileated_gibbon)))
 
 (** Counts the number of leaves of a tree. *)
-let rec count_leaves (t : tree) : int = failwith "Unimplemented"
+let rec count_leaves (t : tree) : int = 
+  match t with 
+  |Leaf -> 1
+  
+
 
 (* Given four helices that should appear on the leaves of each output tree,
    returns a list of all distinct trees with these four input helices at their
