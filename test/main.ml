@@ -118,7 +118,7 @@ let decreasing_similarity_test out in1 _ =
   assert_equal ~printer:string_of_bool
     ~msg:("function: decreasing_similarity\ninput: " ^ pp_helix_list in1)
     out
-    (Dna.decreasing_similarity in1)
+    (Dna.decreasing_similarity in1) 
 
 let decreasing_similarity_tests =
   [ 
@@ -133,7 +133,19 @@ let count_leaves_test out in1 _ =
     ~msg:("function: count_leaves\ninput: " ^ pp_tree in1)
     out (Dna.count_leaves in1)
 
-let count_leaves_tests = []
+let count_leaves_tests = [
+  "count_leaves_test of a tree of only one node"
+  >:: count_leaves_test 1 (Leaf [A;T]);
+  "count_leaves_test of tree with a node and two leaves as children"
+  >:: count_leaves_test 2 (Node(Leaf [A;T], Leaf [G;C]));
+  "count_leaves_test of tree which has a root node that has one node child
+  and one leaf child"
+  >:: count_leaves_test 3 (Node (Leaf gorilla, Node (Leaf human, Leaf chimpanzee)));
+  "count_leaves_test of tree with a root node that has two nodes as children"
+  >:: count_leaves_test 4 (Node (Leaf orangutan, Node (Leaf gorilla, Node (Leaf human, Leaf siamang))));
+  "count_leaves_test of large complex tree"
+  >:: count_leaves_test 8 (Node(lesser_apes(), greater_apes()));
+]
 
 (**************************** helix_of_tree tests *****************************)
 
@@ -142,7 +154,16 @@ let helix_of_tree_test out in1 _ =
     ~msg:("function: helix_of_tree\ninput: " ^ pp_ltree in1)
     out (Dna.helix_of_tree in1)
 
-let helix_of_tree_tests = []
+let helix_of_tree_tests = [
+  "helix_of_tree_test for single labeled leaf with one nucleotide"
+  >:: helix_of_tree_test [A] (LLeaf [A]);
+  "helix_of_tree_test for single labeled leaf with more compelx nucleotide"
+  >:: helix_of_tree_test gorilla (LLeaf gorilla);
+  "helix_of_tree_test for LNode with two leaves"
+  >:: helix_of_tree_test [A;C] (LNode(LLeaf [A;T],[A;C],LLeaf [G;C]));
+  "helix_of_tree_test for more complex LNode"
+  >:: helix_of_tree_test [A; T; C] 
+]
 
 (**************************** unlabel_tree tests ******************************)
 
