@@ -162,7 +162,9 @@ let helix_of_tree_tests = [
   "helix_of_tree_test for LNode with two leaves"
   >:: helix_of_tree_test [A;C] (LNode(LLeaf [A;T],[A;C],LLeaf [G;C]));
   "helix_of_tree_test for more complex LNode"
-  >:: helix_of_tree_test [A; T; C] 
+  >:: helix_of_tree_test [A; T; C]  (LNode (LLeaf [G], [A; T; C] , LNode (LLeaf [C], [A], LLeaf [T])));
+  "helix_of tree_test for complex LNode and complex helix"
+  >:: 
 ]
 
 (**************************** unlabel_tree tests ******************************)
