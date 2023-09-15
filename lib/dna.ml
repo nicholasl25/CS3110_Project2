@@ -98,8 +98,9 @@ let lesser_apes () : tree =
 (** Counts the number of leaves of a tree. *)
 let rec count_leaves (t : tree) : int = 
   match t with 
-  |Leaf -> 1
-  
+  |Leaf(_) -> 1
+  |Node(l, r) -> count_leaves l + count_leaves r
+
 
 
 (* Given four helices that should appear on the leaves of each output tree,
@@ -133,10 +134,12 @@ let rec all_trees (x1 : helix) (x2 : helix) (x3 : helix) (x4 : helix) :
   ]
 
 (** Creates a list of all trees containing the four greater apes at the leaves. *)
-let all_greater_ape_trees () : tree list = failwith "Unimplemented"
+let all_greater_ape_trees () : tree list = 
+  all_trees orangutan gorilla human chimpanzee
 
 (** Creates a list of all trees containing the four lesser apes at the leaves. *)
-let all_lesser_ape_trees () : tree list = failwith "Unimplemented"
+let all_lesser_ape_trees () : tree list = 
+  all_trees white_cheeked_gibbon siamang lar_gibbon pileated_gibbon
 
 (** A labeled_tree is a tree with a helix at each internal node representing the
     DNA of a possible ancestor. *)
@@ -145,11 +148,32 @@ type labeled_tree =
   | LNode of labeled_tree * helix * labeled_tree
 
 (** Returns the helix at the root node of a given labeled_tree. *)
-let helix_of_tree (t : labeled_tree) : helix = failwith "Unimplemented"
+let helix_of_tree (t : labeled_tree) : helix =
+  match t with 
+  |LLeaf(x) -> x
+  |LNode(_,x,_) -> x
 
 (** Given a labeled_tree, returns a tree of identical structure with the helix
     in each Node removed. *)
-let rec unlabel_tree (t : labeled_tree) : tree = failwith "Unimplemented"
+let rec unlabel_tree (t : labeled_tree) : tree = 
+  match t with
+  |LLeaf(x) -> Leaf(x)
+  |LNode(l, _, r) -> Node(unlabel_tree l, unlabel_tree r)
+
+  (** Helper functtion for guess_parent_helix, given two nucleotides this function 
+    returns the first nucleotide if the nucleotides are equivalent and returns 
+    the nucleotide that would occur first in dictionary order (A, C, G, T)
+    if the nucleotides are different*)
+  
+let original_nucleotide (x1 : nucleotide) (x2 : nucleotide) =
+  if x1 = x2 then x1 else
+  match (x1, x2) with 
+  | (A, _) -> A
+  | (_, A) -> A
+  | (C, _) -> C
+  | (_, C) -> C
+  | (_, _) -> G
+
 
 (** Given two helices of equal length, returns a guess of a valid helix that
     could label their parent node in an evolutionary tree. The guessed helix is
@@ -159,13 +183,23 @@ let rec unlabel_tree (t : labeled_tree) : tree = failwith "Unimplemented"
     would occur first in dictionary order (A, C, G, T). Raises: Invalid_argument
     if the given helices are not the same length. *)
 let rec guess_parent_helix (x1 : helix) (x2 : helix) : helix =
-  failwith "Unimplemented"
+  match (x1, x2) with 
+  | ([], []) -> []
+  | ([h1], [h2]) -> [original_nucleotide h1 h2]
+  | (h1 :: t1, h2 :: t2) -> original_nucleotide h1 h2 :: guess_parent_helix t1 t2
+  | (_, _) -> raise (Invalid_argument "Helixes are not of the same length")
 
 (** Given an unlabeled tree, generates a labeled_tree with the same shape but
     with all internal nodes properly labeled with guessed helices at the
     internal nodes. Use guess_parent_helix to compute the appropriate label for
     each parent node, given the labels of its two children. *)
-let rec add_ancestor_labels (t : tree) : labeled_tree = failwith "Unimplemented"
+let rec add_ancestor_labels (t : tree) : labeled_tree = 
+  match t with
+  |Leaf(x) -> LLeaf(x)
+  |Node(n1, n2) -> LNode(add_ancestor_labels n1, 
+  guess_parent_helix (helix_of_tree (add_ancestor_labels n1)) (helix_of_tree (add_ancestor_labels n2)), 
+  add_ancestor_labels n2)
+     
 
 (** Add labels to all trees in a list using add_ancestor_labels. *)
 let rec add_ancestor_labels_list (ts : tree list) : labeled_tree list =
@@ -183,7 +217,11 @@ let labeled_lesser_ape_trees () : labeled_tree list =
 (** Given a labeled_tree, computes the sum of Hamming distances between all
     parent-child pairs, where "parent-child pair" refers to a DIRECT
     parent-child relationship, not just an ancestor relationship. *)
-let rec parent_child_hamming (t : labeled_tree) : int = failwith "Unimplemented"
+let rec parent_child_hamming (t : labeled_tree) : int = 
+  match t with
+  |LLeaf(h) -> 0
+  |LNode(l, h, r) -> hamming_distance h (helix_of_tree l) + hamming_distance h (helix_of_tree r) + 
+  parent_child_hamming l + parent_child_hamming r
 
 (** Given a list of labeled trees, returns the one in the list of lowest
     complexity along with its complexity, as measured by the
@@ -191,7 +229,12 @@ let rec parent_child_hamming (t : labeled_tree) : int = failwith "Unimplemented"
     lowest complexity, return the first one in the list. Raises:
     Invalid_argument if the input list is empty. *)
 let rec simplest_tree (ts : labeled_tree list) : labeled_tree * int =
-  failwith "Unimplemented"
+  match ts with 
+  |[] -> raise (Invalid_argument "Empty List")
+  |[h] -> (h, parent_child_hamming h)
+  |h::t -> if parent_child_hamming h <= snd(simplest_tree t) then (h, parent_child_hamming h)
+  else simplest_tree t
+
 
 (** Calculates the simplest evolutionary tree for the greater apes. *)
 let simplest_greater_ape_tree () : tree =
@@ -207,8 +250,8 @@ let simplest_lesser_ape_tree () : tree =
     by their helices. Raises: Invalid_argument if the given helices are not all
     the same length. *)
 let find_simplest_tree (x1 : helix) (x2 : helix) (x3 : helix) (x4 : helix) :
-    tree =
-  failwith "Unimplemented"
+    tree = 
+    all_trees x1 x2 x3 x4 |> add_ancestor_labels_list |> simplest_tree |> fst |> unlabel_tree
 
 (** Every triplet of adjacent nucleotides in a helix encodes one of 20 amino
     acids, or else indicates the END of the chain. The amino acids and END
@@ -348,7 +391,20 @@ let acid_of_triplet (n1 : nucleotide) (n2 : nucleotide) (n3 : nucleotide) : acid
     Any nucleotides that occur before the first occurrence of Met, including END
     markers, are disregarded. If there are no occurrences of Met, the empty list
     is returned. *)
-let rec acids_of_helix (x : helix) : acid list = failwith "Unimplemented"
+let rec acids_of_helix (x : helix) : acid list = 
+  match x with 
+  |[] -> []
+  |[a1] -> []
+  |a1 :: [a2] -> []
+  |a1 :: a2 :: a3 :: t1 -> if acid_of_triplet a1 a2 a3 = Met 
+    then match t1 with
+    |[] -> []
+    |[b1] -> []
+    |b1 :: [b2] -> []
+    |b1 :: b2 :: b3 :: t2 -> if acid_of_triplet b1 b2 b3 != END then
+      acid_of_triplet b1 b2 b3 :: acids_of_helix t2 else []
+     else match x with 
+     |h::t -> acids_of_helix t
 
 (** Decodes all the acid chains in a given helix, according to the following
     rules. The next acid chain starts after the END triplet of the previous
